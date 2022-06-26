@@ -11,6 +11,12 @@ you do not need superuser permissions, KVM support or other special features
 of device. Input and output are being performed through Xterm-compatible
 terminal screen.
 
+<p align="center">
+  <a href="https://play.google.com/store/apps/details?id=sylirre.vmconsole">
+    <img src="images/google-play-badge.png" width="256px">
+  </a>
+</p>
+
 Typical use-cases of vmConsole application:
 
 - Exploring the world of Linux =)
@@ -19,12 +25,6 @@ Typical use-cases of vmConsole application:
 - Hacking
 - Running TOR hidden services
 - Crawling / archiving web sites
-
-<p align="center">
-  <a href="https://play.google.com/store/apps/details?id=sylirre.vmconsole">
-    <img src="images/google-play-badge.png" width="256px">
-  </a>
-</p>
 
 Application runs on any modern device with [Android OS] 7.0 or higher. For
 the best experience, it is recommended to have 6+ GiB of RAM and 8+ GiB of
