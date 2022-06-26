@@ -15,6 +15,7 @@ set -e
 . /usr/share/abuild/functions.sh
 
 scriptdir="$(dirname "$0")"
+export MKIMAGE_SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 git=$(command -v git) || git=true
 
 # echo '-dirty' if git is not clean

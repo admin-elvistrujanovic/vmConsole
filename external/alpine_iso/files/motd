@@ -82,11 +82,61 @@ command:
 version, access to files could be limited. For example you
 may be able to access only media files (e.g. jpg).[0m
 
+[0;36m----------------------------------------------------------------[0m
+
+[1;96m= INSTALLING SYSTEM ON DISK =[0m
+
+[0;36mDefault installation is diskless and files are stored on tmpfs.
+All changes like configuration or your files are discarded once
+the virtual machine was rebooted or shut down. There is a limit
+on size of temporary file system, which significantly limits
+the packages you can install.[0m
+
+[0;36mAlpine Linux can be installed on persistent disk using the
+utility [0;32msetup-disk[0;36m. An example command is shown below.[0m
+
+  [0;32mexport ROOT_SIZE=4096[0m
+  [0;32msetup-disk -m sys -s 0 /dev/sda[0m
+
+[0;36mThis command installs the system on 4 GiB root parition and
+disables swap. The variable ROOT_SIZE specified root partition
+size in MiB. Note that size of persistent disk is 32 GiB, but
+actual used size must be below available free space on host.[0m
+
+[0;36mIt is recommended that after installation you will edit the
+bootloader configuration file (extlinux.conf) and add these
+parameters to kernel command line:[0m
+
+  [0;32mconsole=ttyS0,115200 tsc=unstable nowatchdog[0m
+
+[0;36mAdditionally you may want to remove option "quiet" to have the
+boot logs shown on console.[0m
+
+[0;36m----------------------------------------------------------------[0m
+
 [1;96m= GETTING HELP FOR ALPINE LINUX =[0m
 
-[1;36mAlpine Wiki[0;36m: [0;35mhttps://wiki.alpinelinux.org/wiki/Main_Page[0m
+[0;36mBundled offline tutorials about Bash and Linux system usage can
+be found at [0;32m~/guides[0;36m. They are plain-text editions of certain
+books from TLDP.[0m
 
-[0;36mThe Wiki pages contain lots of information on how to get
-started with Alpine Linux distribution.[0m
+[1;36mAlpine Linux uses [0;32mapk [0;36mas package manager. Here are some most
+used commands:[0m
+
+ [0;36m- Search package:  [0;32mapk search <query>[0m
+ [0;36m- Install package: [0;32mapk add <pkg-name>[0m
+ [0;36m- Remove package:  [0;32mapk del <pkg-name>[0m
+ [0;36m- Upgrade system:  [0;32mapk upgrade[0m
+
+[0;36mComprehensive tutorials specific to Alpine Linux system usage
+can be found on its official Wiki.[0m
+
+[1;36mVisit Alpine Wiki[0;36m: [0;35mhttps://wiki.alpinelinux.org/wiki/Main_Page[0m
+
+[1;31mWARNING: vmConsole application requires proper skills of Linux
+administration in order to be useful. And considering that
+interface is only text-based terminal, you also need to read
+the printed text carefully in order to not miss important
+notice. This message is not exception. Good luck :)[0m
 
 [0;36m----------------------------------------------------------------[0m
