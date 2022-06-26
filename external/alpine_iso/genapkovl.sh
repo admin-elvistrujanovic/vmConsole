@@ -480,6 +480,7 @@ EOF
 cat "${MKIMAGE_SCRIPT_DIR}"/files/motd | sed -e $'s/\x1b\[[0-9;]*m//g' \
 	> "$tmp"/etc/skel/README.txt
 cp "$tmp"/etc/skel/README.txt "$tmp"/root/README.txt
+chmod 600 "$tmp"/etc/skel/README.txt "$tmp"/root/README.txt
 
 # Linux system & Bash introduction.
 cp -a "${MKIMAGE_SCRIPT_DIR}"/files/skel/guides "$tmp"/etc/skel/guides
