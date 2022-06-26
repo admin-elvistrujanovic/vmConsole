@@ -42,7 +42,7 @@ EOF
 ##
 ##############################################################################
 
-cat "$(dirname "$(realpath "$0")")"/files/issue | makefile root:root 0644 "$tmp"/etc/issue
+cat "${MKIMAGE_SCRIPT_DIR}"/files/issue | makefile root:root 0644 "$tmp"/etc/issue
 
 ##############################################################################
 ##
@@ -50,7 +50,7 @@ cat "$(dirname "$(realpath "$0")")"/files/issue | makefile root:root 0644 "$tmp"
 ##
 ##############################################################################
 
-cat "$(dirname "$(realpath "$0")")"/files/motd | makefile root:root 0644 "$tmp"/etc/motd
+cat "${MKIMAGE_SCRIPT_DIR}"/files/motd | makefile root:root 0644 "$tmp"/etc/motd
 
 ##############################################################################
 ##
@@ -477,8 +477,9 @@ EOF
 ##############################################################################
 
 # Application guide.
-#cp "${MKIMAGE_SCRIPT_DIR}"/files/skel/README.txt "$tmp"/etc/skel/README.txt
-#cp "$tmp"/etc/skel/README.txt "$tmp"/root/README.txt
+cat "${MKIMAGE_SCRIPT_DIR}"/files/motd | sed -e $'s/\x1b\[[0-9;]*m//g' \
+	> "$tmp"/etc/skel/README.txt
+cp "$tmp"/etc/skel/README.txt "$tmp"/root/README.txt
 
 # Linux system & Bash introduction.
 cp -a "${MKIMAGE_SCRIPT_DIR}"/files/skel/guides "$tmp"/etc/skel/guides
