@@ -1,0 +1,39 @@
+---
+layout: default
+---
+
+<header class="home-header">
+  <h1 class="home-title">{{ page.title | escape }}</h1>
+  <style>
+    .first { font-weight: bold; }
+    .wiki { text-align: center; }
+
+    img { margin: 18px auto; max-width:100%; height:auto; }
+    img.phone:first-of-type { margin-top: 3em; display: block; }
+    @media only screen and (min-width: 500px) {
+      img.phone:first-of-type { margin-top: 0; margin-bottom: 0; margin-left: 1em; margin-right: 1em; float: right; }
+    }
+    .badges { text-align: center; margin-top: 0; margin-left: auto; margin-right: auto; }
+
+    .fade-out { opacity: 0; transition: opacity 1s; }
+    .fade-in { opacity: 1; transition: opacity 1s; }
+  </style>
+</header>
+
+<div class="home">
+  <p>
+    Do you like our work and want to support us? We accept crypto.
+  </p>
+
+  <h2>Ethereum (ETH):</h2>
+  <code>0x3A5229e6F7C7A93f5079be94C57A87EfBa853087</code>
+  <p align="left">
+    <img alt="ethereum qrcode" src="/vmConsole/files/donate_wallet_ethereum.png" width="30%"/>
+  </p>
+
+  <h2>Tron (TRX):</h2>
+  <code>TQbKd33f9vVvxQkd7Y2qScdzhpgKKywuhD</code>
+  <p align="left">
+    <img alt="tron qrcode" src="/vmConsole/files/donate_wallet_tron.png" width="30%"/>
+  </p>
+</div>
