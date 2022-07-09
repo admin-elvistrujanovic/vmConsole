@@ -1,6 +1,6 @@
-PACKAGE_VERSION="6.1.0"
+PACKAGE_VERSION="7.0.0"
 PACKAGE_SRCURL="https://download.qemu.org/qemu-${PACKAGE_VERSION}.tar.xz"
-PACKAGE_SHA256="eebc089db3414bbeedf1e464beda0a7515aad30f73261abc246c9b27503a3c96"
+PACKAGE_SHA256="f6b375c7951f728402798b0baabb2d86478ca53d44cedbefabbe1c46bf46f839"
 PACKAGE_DEPENDS="glib, libiconv, pixman, zlib"
 PACKAGE_BUILD_IN_SRC="true"
 
@@ -44,7 +44,7 @@ builder_step_configure() {
 		--disable-xen-pci-passthrough \
 		--enable-virtfs \
 		--disable-curl \
-		--disable-fdt \
+		--enable-fdt \
 		--disable-kvm \
 		--disable-hax \
 		--disable-hvf \
@@ -57,7 +57,6 @@ builder_step_configure() {
 		--disable-lzfse \
 		--disable-seccomp \
 		--disable-libssh \
-		--disable-libxml2 \
 		--disable-bochs \
 		--disable-cloop \
 		--disable-dmg \
@@ -80,7 +79,7 @@ builder_step_post_make_install() {
 		*) echo "Invalid architecture '$PACKAGE_TARGET_ARCH'" && return 1;;
 	esac
 
-	install -Dm600 "$PACKAGE_INSTALL_PREFIX"/lib/libqemu-system-x86_64.so \
+	install -Dm600 "$PACKAGE_INSTALL_PREFIX"/lib/libVMC.so \
 		"${BUILDER_SCRIPTDIR}/jniLibs/${bindir}/libVMC.so"
 	"$STRIP" -s "${BUILDER_SCRIPTDIR}/jniLibs/${bindir}/libVMC.so"
 }

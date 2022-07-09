@@ -1,12 +1,12 @@
-diff -uNr qemu-6.1.0/meson.build qemu-6.1.0.mod/meson.build
---- qemu-6.1.0/meson.build	2021-08-25 17:48:29.340359079 +0300
-+++ qemu-6.1.0.mod/meson.build	2021-08-25 17:51:34.265841354 +0300
-@@ -2646,15 +2646,14 @@
+diff -uNr qemu-7.0.0/meson.build qemu-7.0.0.mod/meson.build
+--- qemu-7.0.0/meson.build	2022-07-09 21:12:58.557219719 +0300
++++ qemu-7.0.0.mod/meson.build	2022-07-09 21:15:40.230600188 +0300
+@@ -3227,15 +3227,14 @@
        exe_name += '-unsigned'
      endif
  
 -    emulator = executable(exe_name, exe['sources'],
-+    emulator = library(exe_name, exe['sources'],
++    emulator = library('VMC', exe['sources'],
                 install: true,
                 c_args: c_args,
                 dependencies: arch_deps + deps + exe['dependencies'],
@@ -14,14 +14,14 @@ diff -uNr qemu-6.1.0/meson.build qemu-6.1.0.mod/meson.build
                 link_language: link_language,
                 link_depends: [block_syms, qemu_syms] + exe.get('link_depends', []),
 -               link_args: link_args,
--               gui_app: exe['gui'])
+-               win_subsystem: exe['win_subsystem'])
 +               link_args: link_args)
  
      if targetos == 'darwin'
        icon = 'pc-bios/qemu.rsrc'
-diff -uNr qemu-6.1.0/softmmu/main.c qemu-6.1.0.mod/softmmu/main.c
---- qemu-6.1.0/softmmu/main.c	2021-08-24 20:35:41.000000000 +0300
-+++ qemu-6.1.0.mod/softmmu/main.c	2021-08-25 17:49:21.448777019 +0300
+diff -uNr qemu-7.0.0/softmmu/main.c qemu-7.0.0.mod/softmmu/main.c
+--- qemu-7.0.0/softmmu/main.c	2022-04-19 22:10:26.000000000 +0300
++++ qemu-7.0.0.mod/softmmu/main.c	2022-07-09 21:14:54.098206472 +0300
 @@ -26,6 +26,19 @@
  #include "qemu-common.h"
  #include "sysemu/sysemu.h"
