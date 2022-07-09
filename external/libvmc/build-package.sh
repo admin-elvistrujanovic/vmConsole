@@ -127,6 +127,7 @@ builder_step_patch_package() {
 	shopt -s nullglob
 	for patch in "$PACKAGE_BUILDER_DIR"/*.patch{$PACKAGE_TARGET_ARCH_BITS,} $DEBUG_PATCHES; do
 		if [ -f "$patch" ]; then
+			echo "Applying patch: ${patch}"
 			patch -p1 -i "$patch"
 		fi
 	done
