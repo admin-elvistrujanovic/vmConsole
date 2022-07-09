@@ -10,5 +10,4 @@ builder_step_make_install() {
 	"$AR" rcs libandroid-support.a *.o
 
 	install -Dm600 libandroid-support.a "$PACKAGE_INSTALL_PREFIX/lib/libandroid-support.a"
-	ln -sfr "$PACKAGE_INSTALL_PREFIX/lib/libandroid-support.a" "$PACKAGE_INSTALL_PREFIX/lib/libiconv.a"
 }

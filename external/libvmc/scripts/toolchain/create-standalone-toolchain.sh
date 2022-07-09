@@ -51,8 +51,7 @@ unset api host_plat
 )
 
 # langinfo.h: Inline implementation of nl_langinfo().
-# iconv.h: Header for iconv, implemented in libandroid-support.
-cp "$SCRIPT_DIR"/ndk-headers/{libintl.h,langinfo.h,iconv.h} "$STANDALONE_TOOLCHAIN_DIR_STAGING/sysroot/usr/include/"
+cp "$SCRIPT_DIR"/ndk-headers/{libintl.h,langinfo.h} "$STANDALONE_TOOLCHAIN_DIR_STAGING/sysroot/usr/include/"
 
 # Remove <sys/capability.h> because it is provided by libcap.
 # Remove <sys/shm.h> from the NDK in favour of that from the libandroid-shmem.
