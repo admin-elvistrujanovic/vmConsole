@@ -539,7 +539,7 @@ while (($# > 0)); do
 
 		if [ "$PACKAGE_TARGET_ARCH" = "arm" ]; then
 			# https://developer.android.com/ndk/guides/standalone_toolchain.html#abi_compatibility:
-			CFLAGS+=" -march=armv7-a -mfpu=neon -mfloat-abi=softfp -mthumb"
+			CFLAGS+=" -march=armv7-a -mfpu=vfp -mfloat-abi=softfp -mthumb"
 			LDFLAGS+=" -march=armv7-a"
 		elif [ "$PACKAGE_TARGET_ARCH" = "i686" ]; then
 			# From $NDK/docs/CPU-ARCH-ABIS.html:
