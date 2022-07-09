@@ -15,7 +15,6 @@ builder_step_pre_configure() {
 
 	if [ "$PACKAGE_TARGET_ARCH" = "arm" ]; then
 		CFLAGS+=" -fno-integrated-as"
-		PACKAGE_EXTRA_CONFIGURE_ARGS+=" --enable-arm-simd"
 		PACKAGE_EXTRA_CONFIGURE_ARGS+=" --enable-arm-neon"
 	elif [ "$PACKAGE_TARGET_ARCH" = "i686" ] || [ "$PACKAGE_TARGET_ARCH" = "x86_64" ]; then
 		PACKAGE_EXTRA_CONFIGURE_ARGS+=" --enable-mmx"
