@@ -1,6 +1,5 @@
-diff -uNr ./usr.old/include/stdio.h ./usr/include/stdio.h
---- ./usr.old/include/stdio.h	2019-05-22 12:49:28.000000000 +0300
-+++ ./usr/include/stdio.h	2019-12-15 18:38:06.678291313 +0200
+--- ./usr/include/stdio.h.orig	2022-05-11 02:48:28.000000000 +0300
++++ ./usr/include/stdio.h	2022-07-09 18:39:38.071250746 +0300
 @@ -44,6 +44,9 @@
  #include <stdarg.h>
  #include <stddef.h>
@@ -10,16 +9,16 @@ diff -uNr ./usr.old/include/stdio.h ./usr/include/stdio.h
 +
  #include <bits/seek_constants.h>
  
- #if __ANDROID_API__ < __ANDROID_API_N__
+ #if __ANDROID_API__ < 24
 @@ -165,7 +168,6 @@
      __printflike(2, 0) __warnattr_strict("vsprintf is often misused; please use vsnprintf");
  char* tmpnam(char* __s)
-     __warnattr("tempnam is unsafe, use mkstemp or tmpfile instead");
+     __warnattr("tmpnam is unsafe, use mkstemp or tmpfile instead");
 -#define P_tmpdir "/tmp/" /* deprecated */
  char* tempnam(const char* __dir, const char* __prefix)
      __warnattr("tempnam is unsafe, use mkstemp or tmpfile instead");
  
-@@ -241,12 +243,6 @@
+@@ -289,12 +291,6 @@
  FILE* freopen64(const char* __path, const char* __mode, FILE* __fp) __INTRODUCED_IN(24);
  #endif /* __ANDROID_API__ >= 24 */
  
@@ -32,7 +31,7 @@ diff -uNr ./usr.old/include/stdio.h ./usr/include/stdio.h
  
  int snprintf(char* __buf, size_t __size, const char* __fmt, ...) __printflike(3, 4);
  int vfscanf(FILE* __fp, const char* __fmt, va_list __args) __scanflike(2, 0);
-@@ -256,9 +252,14 @@
+@@ -304,9 +300,14 @@
  
  #define L_ctermid 1024 /* size for ctermid() */
  
@@ -50,7 +49,7 @@ diff -uNr ./usr.old/include/stdio.h ./usr/include/stdio.h
  
  
  FILE* fdopen(int __fd, const char* __mode);
-@@ -324,6 +325,87 @@
+@@ -372,6 +373,87 @@
  
  #endif
  

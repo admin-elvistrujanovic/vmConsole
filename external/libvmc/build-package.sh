@@ -127,6 +127,7 @@ builder_step_patch_package() {
 	shopt -s nullglob
 	for patch in "$PACKAGE_BUILDER_DIR"/*.patch{$PACKAGE_TARGET_ARCH_BITS,} $DEBUG_PATCHES; do
 		if [ -f "$patch" ]; then
+			echo "Applying patch: ${patch}"
 			patch -p1 -i "$patch"
 		fi
 	done
@@ -516,16 +517,16 @@ while (($# > 0)); do
 			export CPP="${PACKAGE_TARGET_PLATFORM}${PACKAGE_API_LEVEL}-cpp"
 		fi
 
-		export AR="${PACKAGE_TARGET_PLATFORM}-ar"
+		export AR="llvm-ar"
 		export AS="$CC"
 		export CXX="${CC}++"
 		export CC_FOR_BUILD="gcc"
-		export LD="${PACKAGE_TARGET_PLATFORM}-ld"
-		export OBJDUMP="${PACKAGE_TARGET_PLATFORM}-objdump"
+		export LD="ld.lld"
+		export OBJDUMP="llvm-objdump"
 		export PKG_CONFIG="${CROSS_TOOLCHAIN_DIR}/bin/${PACKAGE_TARGET_PLATFORM}-pkg-config"
-		export RANLIB="${PACKAGE_TARGET_PLATFORM}-ranlib"
-		export READELF="${PACKAGE_TARGET_PLATFORM}-readelf"
-		export STRIP="${PACKAGE_TARGET_PLATFORM}-strip"
+		export RANLIB="llvm-ranlib"
+		export READELF="llvm-readelf"
+		export STRIP="llvm-strip"
 
 		export CFLAGS="-fstack-protector-strong"
 		export CPPFLAGS="-I${PACKAGE_INSTALL_PREFIX}/include -D_FORTIFY_SOURCE=2 -DAPPLICATION_RUNTIME_PREFIX=${PACKAGE_INSTALL_PREFIX}"
@@ -539,7 +540,7 @@ while (($# > 0)); do
 
 		if [ "$PACKAGE_TARGET_ARCH" = "arm" ]; then
 			# https://developer.android.com/ndk/guides/standalone_toolchain.html#abi_compatibility:
-			CFLAGS+=" -march=armv7-a -mfpu=neon -mfloat-abi=softfp -mthumb"
+			CFLAGS+=" -march=armv7-a -mfpu=vfp -mfloat-abi=softfp -mthumb"
 			LDFLAGS+=" -march=armv7-a"
 		elif [ "$PACKAGE_TARGET_ARCH" = "i686" ]; then
 			# From $NDK/docs/CPU-ARCH-ABIS.html:

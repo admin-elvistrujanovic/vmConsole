@@ -21,12 +21,12 @@ RUN adduser --disabled-password --shell /bin/bash --gecos "" builder && \
     mkdir -p /data && chown builder:builder /data
 
 # Install NDK toolchain.
-RUN curl --fail --retry 3 -o ndk.zip https://dl.google.com/android/repository/android-ndk-r20-Linux-x86_64.zip && \
+RUN curl --fail --retry 3 -o ndk.zip https://dl.google.com/android/repository/android-ndk-r23c-linux.zip && \
     unzip -q ndk.zip && rm -f ndk.zip
 COPY ./toolchain /tmp/toolchain
-RUN /tmp/toolchain/create-standalone-toolchain.sh android-ndk-r20 /home/builder/ndk-llvm-x86_64 && \
+RUN /tmp/toolchain/create-standalone-toolchain.sh android-ndk-r23c /home/builder/ndk-llvm-x86_64 && \
     chown -Rh builder:builder /home/builder/ndk-llvm-x86_64 && \
-    rm -rf android-ndk-r20
+    rm -rf android-ndk-r23c
 
 # Cleanup.
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
