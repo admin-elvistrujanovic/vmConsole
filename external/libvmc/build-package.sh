@@ -165,6 +165,124 @@ builder_setup_cmake() {
 	export CMAKE_INSTALL_ALWAYS=1
 }
 
+builder_setup_meson() {
+	local BUILDER_MESON_VERSION=0.61.2
+	local BUILDER_MESON_FOLDER="${BUILDER_TOPDIR}/.meson-${BUILDER_MESON_VERSION}"
+
+	if [ ! -d "$BUILDER_MESON_FOLDER" ]; then
+		local MESON_TAR_NAME="meson-${BUILDER_MESON_VERSION}.tar.gz"
+		local MESON_TAR_FILE="${PACKAGE_TMPDIR}/${MESON_TAR_NAME}"
+		local MESON_TMP_FOLDER="${PACKAGE_TMPDIR}/meson-${BUILDER_MESON_VERSION}"
+
+		url_download \
+			"https://github.com/mesonbuild/meson/releases/download/$BUILDER_MESON_VERSION/meson-${BUILDER_MESON_VERSION}.tar.gz" \
+			"$MESON_TAR_FILE" \
+			0233a7f8d959079318f6052b0939c27f68a5de86ba601f25c9ee6869fb5f5889
+
+		tar xf "$MESON_TAR_FILE" -C "$PACKAGE_TMPDIR"
+
+		if [ "$BUILDER_MESON_VERSION" = "0.61.2" ]; then
+			local MESON_0_61_2_GTKDOC_PATCH_FILE="${PACKAGE_TMPDIR}/meson-0.61.2-gtkdoc.patch"
+
+			url_download \
+				"https://github.com/mesonbuild/meson/commit/266e8acb5807b38a550cb5145cea0e19545a21d7.patch" \
+				"$MESON_0_61_2_GTKDOC_PATCH_FILE" \
+				79ecf0e16f613396f43621a928df6c17e6260aa190c320e5c01adad94abd07ad
+
+			patch --silent -p1 -d "$MESON_TMP_FOLDER" < "$MESON_0_61_2_GTKDOC_PATCH_FILE"
+		fi
+
+		# Patch meson to always return true for libintl check.
+		patch --silent -p1 -d "$MESON_TMP_FOLDER" < "$BUILDER_SCRIPTDIR"/scripts/patches/meson_libintl.patch || {
+			error_exit "[${FUNCNAME[0]}]: Meson libintl patch failed."
+		}
+
+		mv "$MESON_TMP_FOLDER" "$BUILDER_MESON_FOLDER"
+	fi
+
+	BUILDER_MESON="${BUILDER_MESON_FOLDER}/meson.py"
+	BUILDER_MESON_CROSSFILE="${PACKAGE_TMPDIR}/meson-crossfile-${PACKAGE_TARGET_ARCH}.txt"
+	local MESON_CPU MESON_CPU_FAMILY
+	if [ "$PACKAGE_TARGET_ARCH" = "arm" ]; then
+		MESON_CPU_FAMILY="arm"
+		MESON_CPU="armv7"
+	elif [ "$PACKAGE_TARGET_ARCH" = "i686" ]; then
+		MESON_CPU_FAMILY="x86"
+		MESON_CPU="i686"
+	elif [ "$PACKAGE_TARGET_ARCH" = "x86_64" ]; then
+		MESON_CPU_FAMILY="x86_64"
+		MESON_CPU="x86_64"
+	elif [ "$PACKAGE_TARGET_ARCH" = "aarch64" ]; then
+		MESON_CPU_FAMILY="aarch64"
+		MESON_CPU="aarch64"
+	else
+		error_exit "Unsupported arch: $PACKAGE_TARGET_ARCH"
+	fi
+
+	local CONTENT=""
+	echo "[binaries]" > $BUILDER_MESON_CROSSFILE
+	echo "ar = '$AR'" >> $BUILDER_MESON_CROSSFILE
+	echo "c = '$CC'" >> $BUILDER_MESON_CROSSFILE
+	echo "cmake = 'cmake'" >> $BUILDER_MESON_CROSSFILE
+	echo "cpp = '$CXX'" >> $BUILDER_MESON_CROSSFILE
+	echo "ld = '$LD'" >> $BUILDER_MESON_CROSSFILE
+	echo "pkgconfig = '$PKG_CONFIG'" >> $BUILDER_MESON_CROSSFILE
+	echo "strip = '$STRIP'" >> $BUILDER_MESON_CROSSFILE
+
+	echo '' >> $BUILDER_MESON_CROSSFILE
+	echo "[properties]" >> $BUILDER_MESON_CROSSFILE
+	echo "needs_exe_wrapper = true" >> $BUILDER_MESON_CROSSFILE
+
+	echo '' >> $BUILDER_MESON_CROSSFILE
+	echo "[built-in options]" >> $BUILDER_MESON_CROSSFILE
+
+	echo -n "c_args = [" >> $BUILDER_MESON_CROSSFILE
+	local word first=true
+	for word in $CFLAGS $CPPFLAGS; do
+		if [ "$first" = "true" ]; then
+			first=false
+		else
+			echo -n ", " >> $BUILDER_MESON_CROSSFILE
+		fi
+		echo -n "'$word'" >> $BUILDER_MESON_CROSSFILE
+	done
+	echo ']' >> $BUILDER_MESON_CROSSFILE
+
+	echo -n "cpp_args = [" >> $BUILDER_MESON_CROSSFILE
+	local word first=true
+	for word in $CXXFLAGS $CPPFLAGS; do
+		if [ "$first" = "true" ]; then
+			first=false
+		else
+			echo -n ", " >> $BUILDER_MESON_CROSSFILE
+		fi
+		echo -n "'$word'" >> $BUILDER_MESON_CROSSFILE
+	done
+	echo ']' >> $BUILDER_MESON_CROSSFILE
+
+	local property
+	for property in c_link_args cpp_link_args; do
+		echo -n "$property = [" >> $BUILDER_MESON_CROSSFILE
+		first=true
+		for word in $LDFLAGS; do
+			if [ "$first" = "true" ]; then
+				first=false
+			else
+				echo -n ", " >> $BUILDER_MESON_CROSSFILE
+			fi
+			echo -n "'$word'" >> $BUILDER_MESON_CROSSFILE
+		done
+		echo ']' >> $BUILDER_MESON_CROSSFILE
+	done
+
+	echo '' >> $BUILDER_MESON_CROSSFILE
+	echo "[host_machine]" >> $BUILDER_MESON_CROSSFILE
+	echo "cpu_family = '$MESON_CPU_FAMILY'" >> $BUILDER_MESON_CROSSFILE
+	echo "cpu = '$MESON_CPU'" >> $BUILDER_MESON_CROSSFILE
+	echo "endian = 'little'" >> $BUILDER_MESON_CROSSFILE
+	echo "system = 'android'" >> $BUILDER_MESON_CROSSFILE
+}
+
 # Configure the package.
 builder_step_configure() {
 	if [ -f "$PACKAGE_SRCDIR/CMakeLists.txt" ]; then
@@ -216,6 +334,17 @@ builder_step_configure() {
 			$PACKAGE_EXTRA_CONFIGURE_ARGS
 
 			return
+	elif [ -f "${PACKAGE_SRCDIR}/meson.build" ]; then
+		builder_setup_meson
+		CC=gcc CXX=g++ CFLAGS= CXXFLAGS= CPPFLAGS= LDFLAGS= "$BUILDER_MESON" \
+			"$PACKAGE_SRCDIR" \
+			"$PACKAGE_BUILDDIR" \
+				--cross-file "$BUILDER_MESON_CROSSFILE" \
+				--prefix "$PACKAGE_INSTALL_PREFIX" \
+				--libdir lib \
+				--buildtype minsize \
+				--strip \
+				$PACKAGE_EXTRA_CONFIGURE_ARGS
 	fi
 
 	if [ ! -e "$PACKAGE_SRCDIR/configure" ]; then
@@ -323,17 +452,24 @@ builder_step_make() {
 		else
 			make -j "$CONFIG_BUILDER_MAKE_PROCESSES" $PACKAGE_EXTRA_MAKE_ARGS
 		fi
+	elif [ -f build.ninja ]; then
+		ninja -w dupbuild=warn -j $CONFIG_BUILDER_MAKE_PROCESSES
 	fi
 }
 
 # Install built artifacts.
 builder_step_make_install() {
 	: "${PACKAGE_MAKE_INSTALL_TARGET:="install"}"
-	# Some packages have problem with parallell install, and it does not buy much, so use -j 1.
-	if [ -z "$PACKAGE_EXTRA_MAKE_ARGS" ]; then
-		make -j 1 $PACKAGE_MAKE_INSTALL_TARGET
-	else
-		make -j 1 $PACKAGE_EXTRA_MAKE_ARGS $PACKAGE_MAKE_INSTALL_TARGET
+	if [ -f "Makefile" ] || [ -f "makefile" ] || \
+		[ -f "GNUmakefile" ] || [ -n "$PACKAGE_EXTRA_MAKE_ARGS" ]; then
+		# Some packages have problem with parallell install, and it does not buy much, so use -j 1.
+		if [ -z "$PACKAGE_EXTRA_MAKE_ARGS" ]; then
+			make -j 1 $PACKAGE_MAKE_INSTALL_TARGET
+		else
+			make -j 1 $PACKAGE_EXTRA_MAKE_ARGS $PACKAGE_MAKE_INSTALL_TARGET
+		fi
+	elif [ -f build.ninja ]; then
+		ninja -w dupbuild=warn -j 1 $PACKAGE_MAKE_INSTALL_TARGET
 	fi
 }
 
