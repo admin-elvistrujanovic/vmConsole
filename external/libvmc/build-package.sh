@@ -516,16 +516,16 @@ while (($# > 0)); do
 			export CPP="${PACKAGE_TARGET_PLATFORM}${PACKAGE_API_LEVEL}-cpp"
 		fi
 
-		export AR="${PACKAGE_TARGET_PLATFORM}-ar"
+		export AR="llvm-ar"
 		export AS="$CC"
 		export CXX="${CC}++"
 		export CC_FOR_BUILD="gcc"
-		export LD="${PACKAGE_TARGET_PLATFORM}-ld"
-		export OBJDUMP="${PACKAGE_TARGET_PLATFORM}-objdump"
+		export LD="ld.lld"
+		export OBJDUMP="llvm-objdump"
 		export PKG_CONFIG="${CROSS_TOOLCHAIN_DIR}/bin/${PACKAGE_TARGET_PLATFORM}-pkg-config"
-		export RANLIB="${PACKAGE_TARGET_PLATFORM}-ranlib"
-		export READELF="${PACKAGE_TARGET_PLATFORM}-readelf"
-		export STRIP="${PACKAGE_TARGET_PLATFORM}-strip"
+		export RANLIB="llvm-ranlib"
+		export READELF="llvm-readelf"
+		export STRIP="llvm-strip"
 
 		export CFLAGS="-fstack-protector-strong"
 		export CPPFLAGS="-I${PACKAGE_INSTALL_PREFIX}/include -D_FORTIFY_SOURCE=2 -DAPPLICATION_RUNTIME_PREFIX=${PACKAGE_INSTALL_PREFIX}"

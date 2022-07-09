@@ -21,26 +21,6 @@ cp -r "$ANDROID_NDK_DIR/toolchains/llvm/prebuilt/linux-x86_64" \
 # Remove android-support header wrapping not needed on android-21:
 rm -Rf "$STANDALONE_TOOLCHAIN_DIR_STAGING/sysroot/usr/local"
 
-# Use gold by default to work around https://github.com/android-ndk/ndk/issues/148
-ln -sfr "$STANDALONE_TOOLCHAIN_DIR_STAGING/bin/aarch64-linux-android-ld.gold" \
-	"$STANDALONE_TOOLCHAIN_DIR_STAGING/bin/aarch64-linux-android-ld"
-ln -sfr "$STANDALONE_TOOLCHAIN_DIR_STAGING/aarch64-linux-android/bin/ld.gold" \
-	"$STANDALONE_TOOLCHAIN_DIR_STAGING/aarch64-linux-android/bin/ld"
-
-# Linker wrapper script to add '--exclude-libs libgcc.a', see
-# https://github.com/android-ndk/ndk/issues/379
-# https://android-review.googlesource.com/#/c/389852/
-for linker in ld ld.bfd ld.gold; do
-	wrap_linker="$STANDALONE_TOOLCHAIN_DIR_STAGING/arm-linux-androideabi/bin/$linker"
-	real_linker="$STANDALONE_TOOLCHAIN_DIR_STAGING/arm-linux-androideabi/bin/$linker.real"
-	cp "$wrap_linker" "$real_linker"
-	echo '#!/bin/bash' > "$wrap_linker"
-	echo -n '$(dirname $0)/' >> "$wrap_linker"
-	echo -n $linker.real >> "$wrap_linker"
-	echo ' --exclude-libs libunwind.a --exclude-libs libgcc_real.a "$@"' >> "$wrap_linker"
-done
-unset linker wrap_linker real_linker
-
 for api in {16..29}; do
 	for host_plat in aarch64-linux-android armv7a-linux-androideabi i686-linux-android x86_64-linux-android; do
 		if [ -e "$STANDALONE_TOOLCHAIN_DIR_STAGING/bin/${host_plat}${api}-clang" ]; then
