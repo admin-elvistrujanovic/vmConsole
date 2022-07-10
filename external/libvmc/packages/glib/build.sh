@@ -16,6 +16,8 @@ PACKAGE_EXTRA_CONFIGURE_ARGS="
 "
 
 builder_step_pre_configure() {
+	# Use autotools.
+	rm -f meson.build
 	NOCONFIGURE=1 ./autogen.sh
 
 	# glib checks for __BIONIC__ instead of __ANDROID__:

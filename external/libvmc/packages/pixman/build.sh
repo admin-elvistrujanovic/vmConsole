@@ -11,6 +11,9 @@ PACKAGE_EXTRA_CONFIGURE_ARGS="
 "
 
 builder_step_pre_configure() {
+	# Use autotools.
+	rm -f meson.build
+
 	export LIBS="-landroid-cpufeatures"
 
 	if [ "$PACKAGE_TARGET_ARCH" = "arm" ]; then
