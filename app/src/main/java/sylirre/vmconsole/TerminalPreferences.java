@@ -27,10 +27,12 @@ public class TerminalPreferences {
     private static final String PREF_IGNORE_BELL = "ignore_bell";
     private static final String PREF_DATA_VERSION = "data_version";
     private static final String PREF_DEFAULT_SSH_USER = "default_ssh_user";
+    private static final String PREF_DISABLE_AUTO_SCROLLING = "disable_auto_scrolling";
 
     private boolean mFirstRun;
     private boolean mShowExtraKeys;
     private boolean mIgnoreBellCharacter;
+    private boolean mDisableAutoScroll;
     private int mDataVersion;
     private String mDefaultSshUser;
 
@@ -38,6 +40,7 @@ public class TerminalPreferences {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         mShowExtraKeys = prefs.getBoolean(PREF_SHOW_EXTRA_KEYS, true);
         mIgnoreBellCharacter = prefs.getBoolean(PREF_IGNORE_BELL, false);
+        mDisableAutoScroll = prefs.getBoolean(PREF_DISABLE_AUTO_SCROLLING, false);
         mDataVersion = prefs.getInt(PREF_DATA_VERSION, 0);
         mDefaultSshUser = prefs.getString(PREF_DEFAULT_SSH_USER, "root");
     }
@@ -61,6 +64,16 @@ public class TerminalPreferences {
         mIgnoreBellCharacter = newValue;
         PreferenceManager.getDefaultSharedPreferences(context).edit()
             .putBoolean(PREF_IGNORE_BELL, newValue).apply();
+    }
+
+    public boolean isAutoScrollDisabled() {
+        return mDisableAutoScroll;
+    }
+
+    public void setDisableAutoScroll(Context context, boolean newValue) {
+        mDisableAutoScroll = newValue;
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+                .putBoolean(PREF_DISABLE_AUTO_SCROLLING, newValue).apply();
     }
 
     public void updateDataVersion(Context context) {

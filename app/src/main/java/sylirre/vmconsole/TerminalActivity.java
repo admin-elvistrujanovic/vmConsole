@@ -72,6 +72,7 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
     private static final int CONTEXTMENU_RESET_TERMINAL_ID = 6;
     private static final int CONTEXTMEMU_SHUTDOWN = 7;
     private static final int CONTEXTMENU_TOGGLE_IGNORE_BELL = 8;
+    private static final int CONTEXTMENU_TOGGLE_AUTO_SCROLL = 9;
 
     private final int MAX_FONTSIZE = 256;
     private int MIN_FONTSIZE;
@@ -546,6 +547,8 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
         menu.add(Menu.NONE, CONTEXTMEMU_SHUTDOWN, Menu.NONE, R.string.menu_shutdown);
         menu.add(Menu.NONE, CONTEXTMENU_TOGGLE_IGNORE_BELL, Menu.NONE, R.string.menu_toggle_ignore_bell)
             .setCheckable(true).setChecked(mSettings.isBellIgnored());
+        menu.add(Menu.NONE, CONTEXTMENU_TOGGLE_AUTO_SCROLL, Menu.NONE, R.string.menu_toggle_scrolling)
+            .setCheckable(true).setChecked(mSettings.isAutoScrollDisabled());
     }
 
     @Override
@@ -624,7 +627,7 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
             case CONTEXTMENU_SELECT_URLS:
                 showUrlSelection();
                 return true;
-            case CONTEXTMENU_RESET_TERMINAL_ID:
+            case CONTEXTMENU_RESET_TERMINAL_ID: {
                 TerminalSession session = mTerminalView.getCurrentSession();
                 if (session != null) {
                     session.reset(true);
@@ -632,6 +635,7 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
                         Toast.LENGTH_SHORT).show();
                 }
                 return true;
+            }
             case CONTEXTMEMU_SHUTDOWN:
                 if (mTermService != null) {
                     new AlertDialog.Builder(this)
@@ -647,6 +651,17 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
             case CONTEXTMENU_TOGGLE_IGNORE_BELL:
                 mSettings.setIgnoreBellCharacter(this, !mSettings.isBellIgnored());
                 return true;
+            case CONTEXTMENU_TOGGLE_AUTO_SCROLL:
+                if (mTermService != null) {
+                    TerminalSession session = mTermService.getSession();
+                    if (session != null) {
+                        boolean disable = mSettings.isAutoScrollDisabled();
+                        session.getEmulator().disableAutoScroll(!disable);
+                        mSettings.setDisableAutoScroll(this, !disable);
+                        return true;
+                    }
+                }
+                return false;
             default:
                 return super.onContextItemSelected(item);
         }

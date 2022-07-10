@@ -242,6 +242,11 @@ public final class TerminalEmulator {
      */
     private int mScrollCounter = 0;
 
+    /**
+     * Whether to disable automatic scrolling.
+     */
+    private boolean mAutoScrollDisabled;
+
     private byte mUtf8ToFollow, mUtf8Index;
     private final byte[] mUtf8InputBuffer = new byte[4];
     private int mLastEmittedCodePoint = -1;
@@ -2331,6 +2336,14 @@ public final class TerminalEmulator {
 
     public void clearScrollCounter() {
         mScrollCounter = 0;
+    }
+
+    public boolean isAutoScrollDisabled() {
+        return mAutoScrollDisabled;
+    }
+
+    public void disableAutoScroll(boolean disable) {
+        mAutoScrollDisabled = disable;
     }
 
     /** Reset terminal state so user can interact with it regardless of present state. */
