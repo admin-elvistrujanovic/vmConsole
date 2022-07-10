@@ -57,4 +57,8 @@
     <!-- Misc -->
     <string name="toast_no_storage_permission">No storage permission granted: you will not be able to mount external storage!</string>
     <string name="toast_reset_terminal">Terminal state has been reset.</string>
+    <string name="toast_bell_char_ignored">Bell characters will be ignored.</string>
+    <string name="toast_bell_char_processed">Bell characters will be processed.</string>
+    <string name="toast_terminal_scrolling_disabled">Terminal auto scrolling disabled.</string>
+    <string name="toast_terminal_scrolling_enabled">Terminal auto scrolling enabled.</string>
 </resources>

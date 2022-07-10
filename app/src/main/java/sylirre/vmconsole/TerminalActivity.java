@@ -649,15 +649,27 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
                 }
                 return true;
             case CONTEXTMENU_TOGGLE_IGNORE_BELL:
-                mSettings.setIgnoreBellCharacter(this, !mSettings.isBellIgnored());
+                boolean bellIgnored = mSettings.isBellIgnored();
+                mSettings.setIgnoreBellCharacter(this, !bellIgnored);
+                if (!bellIgnored) {
+                    Toast.makeText(this, R.string.toast_bell_char_ignored, Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(this, R.string.toast_bell_char_processed, Toast.LENGTH_LONG).show();
+                }
                 return true;
             case CONTEXTMENU_TOGGLE_AUTO_SCROLL:
                 if (mTermService != null) {
                     TerminalSession session = mTermService.getSession();
                     if (session != null) {
-                        boolean disable = mSettings.isAutoScrollDisabled();
-                        session.getEmulator().disableAutoScroll(!disable);
-                        mSettings.setDisableAutoScroll(this, !disable);
+                        boolean disableScroll = mSettings.isAutoScrollDisabled();
+                        session.getEmulator().disableAutoScroll(!disableScroll);
+                        mSettings.setDisableAutoScroll(this, !disableScroll);
+
+                        if (!disableScroll) {
+                            Toast.makeText(this, R.string.toast_terminal_scrolling_disabled, Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(this, R.string.toast_terminal_scrolling_enabled, Toast.LENGTH_LONG).show();
+                        }
                         return true;
                     }
                 }
