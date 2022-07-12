@@ -13,7 +13,7 @@ android {
         minSdkVersion 24
         targetSdkVersion 33
         versionCode 12
-        versionName "v1.3.0-r$versionCode"
+        versionName "v1.3.1-r$versionCode"
 
         archivesBaseName = "vmConsole-$versionName"
 
