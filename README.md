@@ -13,7 +13,10 @@ terminal screen.
 
 <p align="center">
   <a href="https://play.google.com/store/apps/details?id=sylirre.vmconsole">
-    <img src="images/google-play-badge.png" width="256px">
+    <img src="docs/files/get-it-on-google-play.png" width="256px">
+  </a>
+  <a href="https://github.com/sylirre/vmConsole/releases/latest">
+    <img src="docs/files/get-it-on-github.png" width="256px">
   </a>
 </p>
 
