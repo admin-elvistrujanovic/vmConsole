@@ -125,13 +125,6 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
             mExtraKeysView.setVisibility(View.VISIBLE);
         }
 
-        startApplication();
-    }
-
-    /**
-     * Check for storage permission and start service.
-     */
-    private void startApplication() {
         // Start the service and make it run regardless of who is bound to it:
         Intent serviceIntent = new Intent(this, TerminalService.class);
         startService(serviceIntent);
