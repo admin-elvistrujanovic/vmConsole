@@ -29,13 +29,6 @@ it function properly or enable additional features.
   the Internet access is necessary to install packages from a remote
   repository.
 
-- Storage permission (`android.permission.WRITE_EXTERNAL_STORAGE`)
-
-  Used to let user access his files outside of the vmConsole virtual
-  machine. This permission is optional and is disabled by default.
-  On Android OS version 10 and higher, access scope is limited only
-  to media files ([scoped storage](https://source.android.com/devices/storage/scoped)).
-
 ## Our website
 
 vmConsole official web site is running on [GitHub Pages](https://pages.github.com/)
