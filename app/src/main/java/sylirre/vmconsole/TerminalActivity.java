@@ -32,7 +32,6 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.IBinder;
 import android.text.TextUtils;
 import android.util.Log;
@@ -67,12 +66,13 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
     private static final int CONTEXTMENU_PASTE_ID = 1;
     private static final int CONTEXTMENU_OPEN_SSH = 2;
     private static final int CONTEXTMENU_OPEN_WEB = 3;
-    private static final int CONTEXTMENU_AUTOFILL_PW = 4;
-    private static final int CONTEXTMENU_SELECT_URLS = 5;
-    private static final int CONTEXTMENU_RESET_TERMINAL_ID = 6;
-    private static final int CONTEXTMEMU_SHUTDOWN = 7;
-    private static final int CONTEXTMENU_TOGGLE_IGNORE_BELL = 8;
-    private static final int CONTEXTMENU_TOGGLE_AUTO_SCROLL = 9;
+    private static final int CONTEXTMENU_OPEN_FM = 4;
+    private static final int CONTEXTMENU_AUTOFILL_PW = 5;
+    private static final int CONTEXTMENU_SELECT_URLS = 6;
+    private static final int CONTEXTMENU_RESET_TERMINAL_ID = 7;
+    private static final int CONTEXTMEMU_SHUTDOWN = 8;
+    private static final int CONTEXTMENU_TOGGLE_IGNORE_BELL = 9;
+    private static final int CONTEXTMENU_TOGGLE_AUTO_SCROLL = 10;
 
     private static final int PERMISSION_REQUEST_CODE_NOTIFICATIONS = 1000;
 
@@ -528,6 +528,7 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
                 menu.add(Menu.NONE, CONTEXTMENU_OPEN_WEB, Menu.NONE, getResources().getString(R.string.menu_open_web, "localhost:" + mTermService.WEB_PORT));
             }
         }
+        menu.add(Menu.NONE, CONTEXTMENU_OPEN_FM, Menu.NONE, R.string.menu_open_fm);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             AutofillManager autofillManager = getSystemService(AutofillManager.class);
             if (autofillManager != null && autofillManager.isEnabled()) {
@@ -607,6 +608,12 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
                 } else {
                     Toast.makeText(this, R.string.toast_open_web_unavailable, Toast.LENGTH_LONG).show();
                 }
+                return true;
+            case CONTEXTMENU_OPEN_FM:
+                // Open standard file manager where user can access vmConsole shared volume.
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("content://com.android.externalstorage.documents/root/primary"));
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
                 return true;
             case CONTEXTMENU_AUTOFILL_PW:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
