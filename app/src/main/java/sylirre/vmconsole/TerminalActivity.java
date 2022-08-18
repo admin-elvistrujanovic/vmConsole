@@ -482,7 +482,7 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
 
         File userData = new File(getFilesDir(), "user_volume");
         try {
-            userData.mkdirs();
+            if (!userData.exists()) userData.mkdirs();
             processArgs.addAll(Arrays.asList("-fsdev",
                     "local,security_model=none,id=fsdev0,multidevs=remap,path=" + userData.getAbsolutePath()));
             processArgs.addAll(Arrays.asList("-device",

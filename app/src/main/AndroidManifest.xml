@@ -49,6 +49,17 @@
             </intent-filter>
         </activity>
 
+        <provider
+            android:name=".UserVolume"
+            android:authorities="sylirre.vmconsole.documents"
+            android:exported="true"
+            android:grantUriPermissions="true"
+            android:permission="android.permission.MANAGE_DOCUMENTS">
+            <intent-filter>
+                <action android:name="android.content.action.DOCUMENTS_PROVIDER" />
+            </intent-filter>
+        </provider>
+
         <service
             android:name=".TerminalService"
             android:exported="false" />
