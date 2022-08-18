@@ -32,7 +32,6 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.IBinder;
 import android.text.TextUtils;
 import android.util.Log;
@@ -67,12 +66,13 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
     private static final int CONTEXTMENU_PASTE_ID = 1;
     private static final int CONTEXTMENU_OPEN_SSH = 2;
     private static final int CONTEXTMENU_OPEN_WEB = 3;
-    private static final int CONTEXTMENU_AUTOFILL_PW = 4;
-    private static final int CONTEXTMENU_SELECT_URLS = 5;
-    private static final int CONTEXTMENU_RESET_TERMINAL_ID = 6;
-    private static final int CONTEXTMEMU_SHUTDOWN = 7;
-    private static final int CONTEXTMENU_TOGGLE_IGNORE_BELL = 8;
-    private static final int CONTEXTMENU_TOGGLE_AUTO_SCROLL = 9;
+    private static final int CONTEXTMENU_OPEN_FM = 4;
+    private static final int CONTEXTMENU_AUTOFILL_PW = 5;
+    private static final int CONTEXTMENU_SELECT_URLS = 6;
+    private static final int CONTEXTMENU_RESET_TERMINAL_ID = 7;
+    private static final int CONTEXTMEMU_SHUTDOWN = 8;
+    private static final int CONTEXTMENU_TOGGLE_IGNORE_BELL = 9;
+    private static final int CONTEXTMENU_TOGGLE_AUTO_SCROLL = 10;
 
     private static final int PERMISSION_REQUEST_CODE_NOTIFICATIONS = 1000;
 
@@ -310,25 +310,6 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
     }
 
     /**
-     * Determine whether application has at least read-only permission to
-     * the shared storage.
-     * @return Boolean value whether storage permission is granted.
-     */
-    private boolean hasStoragePermission() {
-        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        }
-
-        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
      * Get a random free high tcp port which later will be used in startQemu().
      * @return Integer value in range 30000 - 50000 which is available tcp port.
      *         On failure -1 will be returned.
@@ -499,17 +480,15 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
         processArgs.addAll(Arrays.asList("-netdev", vmnicArgs));
         processArgs.addAll(Arrays.asList("-device", "virtio-net-pci,netdev=vmnic0,id=virtio-net-pci0"));
 
-        // Access to shared storage.
-        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-            if (hasStoragePermission()) {
-                File sharedStorage = Environment.getExternalStorageDirectory();
-                processArgs.addAll(Arrays.asList("-fsdev",
-                        "local,security_model=none,id=fsdev0,multidevs=remap,path=" + sharedStorage.getAbsolutePath()));
-                processArgs.addAll(Arrays.asList("-device",
-                        "virtio-9p-pci,fsdev=fsdev0,mount_tag=host_storage,id=virtio-9p-pci0"));
-            } else {
-                Toast.makeText(this, R.string.toast_no_storage_permission, Toast.LENGTH_LONG).show();
-            }
+        File userData = new File(getFilesDir(), "user_volume");
+        try {
+            if (!userData.exists()) userData.mkdirs();
+            processArgs.addAll(Arrays.asList("-fsdev",
+                    "local,security_model=none,id=fsdev0,multidevs=remap,path=" + userData.getAbsolutePath()));
+            processArgs.addAll(Arrays.asList("-device",
+                    "virtio-9p-pci,fsdev=fsdev0,mount_tag=host_storage,id=virtio-9p-pci0"));
+        } catch (Exception e) {
+            Log.e(Config.APP_LOG_TAG, "failed to create user_volume directory", e);
         }
 
         // We need only monitor & serial consoles.
@@ -549,6 +528,7 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
                 menu.add(Menu.NONE, CONTEXTMENU_OPEN_WEB, Menu.NONE, getResources().getString(R.string.menu_open_web, "localhost:" + mTermService.WEB_PORT));
             }
         }
+        menu.add(Menu.NONE, CONTEXTMENU_OPEN_FM, Menu.NONE, R.string.menu_open_fm);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             AutofillManager autofillManager = getSystemService(AutofillManager.class);
             if (autofillManager != null && autofillManager.isEnabled()) {
@@ -628,6 +608,12 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
                 } else {
                     Toast.makeText(this, R.string.toast_open_web_unavailable, Toast.LENGTH_LONG).show();
                 }
+                return true;
+            case CONTEXTMENU_OPEN_FM:
+                // Open standard file manager where user can access vmConsole shared volume.
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("content://com.android.externalstorage.documents/root/primary"));
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
                 return true;
             case CONTEXTMENU_AUTOFILL_PW:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
