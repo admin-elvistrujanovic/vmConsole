@@ -258,7 +258,7 @@ public class TerminalService extends Service implements SessionChangedCallback {
     /**
      * Update the shown foreground service notification after making any changes that affect it.
      */
-    private void updateNotification() {
+    public void updateNotification() {
         if (mTerminalSession != null) {
             ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).notify(NOTIFICATION_ID, buildNotification());
         }

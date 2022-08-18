@@ -74,6 +74,8 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
     private static final int CONTEXTMENU_TOGGLE_IGNORE_BELL = 8;
     private static final int CONTEXTMENU_TOGGLE_AUTO_SCROLL = 9;
 
+    private static final int PERMISSION_REQUEST_CODE_NOTIFICATIONS = 1000;
+
     private final int MAX_FONTSIZE = 256;
     private int MIN_FONTSIZE;
     private static int currentFontSize = -1;
@@ -130,6 +132,24 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
         startService(serviceIntent);
         if (!bindService(serviceIntent, this, 0)) {
             throw new RuntimeException("bindService() failed");
+        }
+
+        // On Android 13+ it is not possible to display service notification
+        // without granting relevant permission.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                    PERMISSION_REQUEST_CODE_NOTIFICATIONS);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == PERMISSION_REQUEST_CODE_NOTIFICATIONS) {
+            if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+                if (mTermService != null) {
+                    mTermService.updateNotification();
+                }
+            }
         }
     }
 
