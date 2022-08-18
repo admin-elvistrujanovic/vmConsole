@@ -310,25 +310,6 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
     }
 
     /**
-     * Determine whether application has at least read-only permission to
-     * the shared storage.
-     * @return Boolean value whether storage permission is granted.
-     */
-    private boolean hasStoragePermission() {
-        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        }
-
-        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
      * Get a random free high tcp port which later will be used in startQemu().
      * @return Integer value in range 30000 - 50000 which is available tcp port.
      *         On failure -1 will be returned.
@@ -499,17 +480,15 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
         processArgs.addAll(Arrays.asList("-netdev", vmnicArgs));
         processArgs.addAll(Arrays.asList("-device", "virtio-net-pci,netdev=vmnic0,id=virtio-net-pci0"));
 
-        // Access to shared storage.
-        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-            if (hasStoragePermission()) {
-                File sharedStorage = Environment.getExternalStorageDirectory();
-                processArgs.addAll(Arrays.asList("-fsdev",
-                        "local,security_model=none,id=fsdev0,multidevs=remap,path=" + sharedStorage.getAbsolutePath()));
-                processArgs.addAll(Arrays.asList("-device",
-                        "virtio-9p-pci,fsdev=fsdev0,mount_tag=host_storage,id=virtio-9p-pci0"));
-            } else {
-                Toast.makeText(this, R.string.toast_no_storage_permission, Toast.LENGTH_LONG).show();
-            }
+        File userData = new File(getFilesDir(), "user_volume");
+        try {
+            userData.mkdirs();
+            processArgs.addAll(Arrays.asList("-fsdev",
+                    "local,security_model=none,id=fsdev0,multidevs=remap,path=" + userData.getAbsolutePath()));
+            processArgs.addAll(Arrays.asList("-device",
+                    "virtio-9p-pci,fsdev=fsdev0,mount_tag=host_storage,id=virtio-9p-pci0"));
+        } catch (Exception e) {
+            Log.e(Config.APP_LOG_TAG, "failed to create user_volume directory", e);
         }
 
         // We need only monitor & serial consoles.
