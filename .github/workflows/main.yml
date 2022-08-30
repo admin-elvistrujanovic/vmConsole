@@ -40,7 +40,7 @@ jobs:
       - name: Testing terminal emulator library
         run: ./gradlew test
 
-  alpine-iso:
+  ubuntu-iso:
     name: Build Ubuntu Linux ISO
     needs: terminal-tests
     runs-on: ubuntu-latest
