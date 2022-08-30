@@ -423,7 +423,7 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
         // choose appropriate values.
         // mem[0] - tcg buffer size, mem[1] - vm ram buffer size.
         int[] mem = getSafeMem();
-        processArgs.addAll(Arrays.asList("-accel", "tcg,tb-size=" + mem[0], "-m", String.valueOf(mem[1])));
+        processArgs.addAll(Arrays.asList("-accel", "tcg,tb-size=" + mem[8000], "-m", String.valueOf(mem[256])));
 
         // Do not create default devices.
         processArgs.add("-nodefaults");
@@ -447,6 +447,8 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
 
         // Try to boot from HDD.
         processArgs.addAll(Arrays.asList("-boot", "c,menu=on"));
+        // Try to use VNC.
+        processArgs.addAll(Arrays.asList("-vnc", ":1"));
 
         // Setup random number generator.
         processArgs.addAll(Arrays.asList("-object", "rng-random,filename=/dev/urandom,id=rng0"));
@@ -492,7 +494,7 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
         }
 
         // We need only monitor & serial consoles.
-        processArgs.add("-nographic");
+        processArgs.addAll(Arrays.asList("--vga", "cirrus"));
 
         // Disable parallel port.
         processArgs.addAll(Arrays.asList("-parallel", "none"));
@@ -521,11 +523,11 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
         if (mTermService != null) {
             if (mTermService.SSH_PORT != -1) {
-                menu.add(Menu.NONE, CONTEXTMENU_OPEN_SSH, Menu.NONE, getResources().getString(R.string.menu_open_ssh, "localhost:" + mTermService.SSH_PORT));
+                menu.add(Menu.NONE, CONTEXTMENU_OPEN_SSH, Menu.NONE, getResources().getString(R.string.menu_open_ssh, ":" + mTermService.SSH_PORT));
             }
 
             if (mTermService.WEB_PORT != -1) {
-                menu.add(Menu.NONE, CONTEXTMENU_OPEN_WEB, Menu.NONE, getResources().getString(R.string.menu_open_web, "localhost:" + mTermService.WEB_PORT));
+                menu.add(Menu.NONE, CONTEXTMENU_OPEN_WEB, Menu.NONE, getResources().getString(R.string.menu_open_web, ":" + mTermService.WEB_PORT));
             }
         }
         menu.add(Menu.NONE, CONTEXTMENU_OPEN_FM, Menu.NONE, R.string.menu_open_fm);
@@ -574,7 +576,7 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
                         }
 
                         // Such URLs handled by applications like ConnectBot.
-                        String address = "ssh://" + userName + "@127.0.0.1:" + mTermService.SSH_PORT + "/#vmConsole";
+                        String address = "ssh://" + userName + "@:" + mTermService.SSH_PORT + "/#vmConsole";
                         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(address));
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         try {
@@ -597,7 +599,7 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
                 }
 
                 if (webPort != -1) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://127.0.0.1:" + webPort));
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://:" + webPort));
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     try {
                         startActivity(intent);
