@@ -1,4 +1,4 @@
-name: Application
+name: Application Ubuntu (Not Finished yet - stay tuned)
 
 on:
   pull_request:
