@@ -9,7 +9,7 @@ on:
       - development
     paths:
       - app/*
-      - external/alpine_iso/*
+      - external/ubuntu_iso/*
       - external/libvmc/*
       - gradle/*
       - gradle*
@@ -41,7 +41,7 @@ jobs:
         run: ./gradlew test
 
   alpine-iso:
-    name: Build Alpine Linux ISO
+    name: Build Ubuntu Linux ISO
     needs: terminal-tests
     runs-on: ubuntu-latest
     steps:
@@ -52,7 +52,7 @@ jobs:
         run: |
           # Create ephemeral key if no secret passphrase provided.
           if [ -z "$RSA_KEY_PASSPHRASE" ]; then
-            cd ./external/alpine_iso/abuild-keys
+            cd ./external/ubuntu_iso/abuild-keys
             rm -f vmconsole-dev.*
             openssl genrsa -out vmconsole-dev.rsa 2048
             openssl rsa -in vmconsole-dev.rsa -pubout -out vmconsole-dev.rsa.pub
@@ -67,13 +67,13 @@ jobs:
         id: iso-cache
         uses: actions/cache@v3
         with:
-          path: ./app/src/main/assets/alpine-x86_64.iso
-          key: alpine-iso--${{ hashFiles('./app/build.gradle', './external/alpine_iso/**', '!./external/alpine_iso/**.md') }}
+          path: ./app/src/main/assets/ubuntu-x86_64.iso
+          key: ubuntu-iso--${{ hashFiles('./app/build.gradle', './external/ubuntu_iso/**', '!./external/ubuntu_iso/**.md') }}
 
-      - name: Build Alpine Linux ISO
+      - name: Build Ubuntu Linux ISO
         if: ${{ steps.iso-cache.outputs.cache-hit != 'true' }}
         run: |
-          cd ./external/alpine_iso
+          cd ./external/ubuntu_iso
           [ -z "$RSA_KEY_PASSPHRASE" ] && export RSA_KEY_PASSPHRASE=pass
           make build-docker OUTPUT_DIR=$(realpath ../../app/src/main/assets)
         env:
@@ -122,7 +122,7 @@ jobs:
 
   app:
     name: Build application
-    needs: [alpine-iso, libvmc]
+    needs: [ubuntu-iso, libvmc]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -136,7 +136,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ./app/src/main/assets/alpine-x86_64.iso
-          key: alpine-iso--${{ hashFiles('./app/build.gradle', './external/alpine_iso/**', '!./external/alpine_iso/**.md') }}
+          key: alpine-iso--${{ hashFiles('./app/build.gradle', './external/ubuntu_iso/**', '!./external/ubuntu_iso/**.md') }}
 
       - name: Get cached libVMC.so (arm64-v8a)
         uses: actions/cache@v3
@@ -164,13 +164,6 @@ jobs:
 
       - name: Create APK
         run: |
-          # Detect missing ISO file.
-          [ ! -f ./app/src/main/assets/alpine-x86_64.iso ] && exit 1
-
-          # Detect missing JNI libraries.
-          for abi in arm64-v8a armeabi-v7a x86 x86_64; do
-            [ ! -f "./external/libvmc/jniLibs/${abi}/libVMC.so" ] && exit 1
-          done
 
           mkdir -p ./artifacts
 
