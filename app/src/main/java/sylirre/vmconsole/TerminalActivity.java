@@ -523,11 +523,11 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
         if (mTermService != null) {
             if (mTermService.SSH_PORT != -1) {
-                menu.add(Menu.NONE, CONTEXTMENU_OPEN_SSH, Menu.NONE, getResources().getString(R.string.menu_open_ssh, ":" + mTermService.SSH_PORT));
+                menu.add(Menu.NONE, CONTEXTMENU_OPEN_SSH, Menu.NONE, getResources().getString(R.string.menu_open_ssh, "localhost:" + mTermService.SSH_PORT));
             }
 
             if (mTermService.WEB_PORT != -1) {
-                menu.add(Menu.NONE, CONTEXTMENU_OPEN_WEB, Menu.NONE, getResources().getString(R.string.menu_open_web, ":" + mTermService.WEB_PORT));
+                menu.add(Menu.NONE, CONTEXTMENU_OPEN_WEB, Menu.NONE, getResources().getString(R.string.menu_open_web, "localhost:" + mTermService.WEB_PORT));
             }
         }
         menu.add(Menu.NONE, CONTEXTMENU_OPEN_FM, Menu.NONE, R.string.menu_open_fm);
@@ -599,7 +599,7 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
                 }
 
                 if (webPort != -1) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://:" + webPort));
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://127.0.0.1:" + webPort));
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     try {
                         startActivity(intent);
